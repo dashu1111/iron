@@ -9,4 +9,3 @@ instance/
 *.db
 .env
 *.log
-seed_users_output.txt
