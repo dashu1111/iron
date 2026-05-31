@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>账号管理</h2>
+<a href="{{ url_for('admin.user_add') }}" class="btn btn-success mb-3">新增账号</a>
+<table class="table table-responsive table-striped">
+    <thead>
+        <tr>
+            <th>ID</th><th>用户名</th><th>姓名</th><th>角色</th><th>作业区</th><th>状态</th><th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.role }}</td>
+            <td>{{ user.department or '' }}</td>
+            <td>{% if user.enabled %}启用{% else %}禁用{% endif %}</td>
+            <td>
+                <a href="{{ url_for('admin.user_edit', id=user.id) }}" class="btn btn-sm btn-primary">编辑</a>
+                <a href="{{ url_for('admin.reset_password', id=user.id) }}" class="btn btn-sm btn-warning">重置密码</a>
+                {% if user.enabled %}
+                <a href="{{ url_for('admin.toggle_user', id=user.id) }}" class="btn btn-sm btn-secondary">禁用</a>
+                {% else %}
+                <a href="{{ url_for('admin.toggle_user', id=user.id) }}" class="btn btn-sm btn-success">启用</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

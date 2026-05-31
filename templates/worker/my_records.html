@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>我的记录</h2>
+<h4>加班记录</h4>
+<table class="table">
+    <thead><tr><th>日期</th><th>班次</th><th>时间</th><th>类型</th><th>状态</th></tr></thead>
+    <tbody>
+    {% for ot in ots %}
+    <tr>
+        <td>{{ ot.date }}</td>
+        <td>{{ ot.shift }}</td>
+        <td>{{ ot.start_time.strftime('%H:%M') }} - {{ ot.end_time.strftime('%H:%M') }}</td>
+        <td>{{ ot.ot_type }}</td>
+        <td>{{ ot.status }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<h4>请假记录</h4>
+<table class="table">
+    <thead><tr><th>起始</th><th>结束</th><th>类型</th><th>状态</th></tr></thead>
+    <tbody>
+    {% for lv in leaves %}
+    <tr>
+        <td>{{ lv.start_date }}</td>
+        <td>{{ lv.end_date }}</td>
+        <td>{{ lv.leave_type }}</td>
+        <td>{{ lv.status }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>管理员控制台</h2>
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">员工总数</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ total_users }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">加班记录</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ total_ot }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">请假记录</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ total_leave }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>编辑账号</h2>
+<form method="post" class="row g-3">
+    <div class="col-md-4">
+        <label class="form-label">用户名</label>
+        <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">姓名</label>
+        <input type="text" name="name" class="form-control" value="{{ user.name }}" required>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">角色</label>
+        <select name="role" class="form-select">
+            <option value="worker" {% if user.role=='worker' %}selected{% endif %}>普通员工</option>
+            <option value="leader" {% if user.role=='leader' %}selected{% endif %}>作业长</option>
+            <option value="admin" {% if user.role=='admin' %}selected{% endif %}>管理员</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">班组</label>
+        <input type="text" name="group" class="form-control" value="{{ user.group if user else '' }}">
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">作业区</label>
+        <input type="text" name="department" class="form-control" value="{{ user.department or '' }}">
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">保存</button>
+    </div>
+</form>
+{% endblock %}

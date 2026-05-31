@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>全量记录查询</h2>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="ot-tab" data-bs-toggle="tab" data-bs-target="#ot" type="button">加班记录</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="leave-tab" data-bs-toggle="tab" data-bs-target="#leave" type="button">请假记录</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="bonus-tab" data-bs-toggle="tab" data-bs-target="#bonus" type="button">奖金记录</button>
+  </li>
+</ul>
+<div class="tab-content mt-3">
+  <div class="tab-pane fade show active" id="ot">
+    <table class="table table-responsive">
+        <thead><tr><th>姓名</th><th>日期</th><th>班次</th><th>类型</th><th>时间</th><th>状态</th></tr></thead>
+        <tbody>
+        {% for ot in overtimes %}
+        <tr>
+            <td>{{ ot.user.name }}</td>
+            <td>{{ ot.date }}</td>
+            <td>{{ ot.shift }}</td>
+            <td>{{ ot.ot_type }}</td>
+            <td>{{ ot.start_time.strftime('%H:%M') }} - {{ ot.end_time.strftime('%H:%M') }}</td>
+            <td>{{ ot.status }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+  </div>
+  <div class="tab-pane fade" id="leave">
+    <table class="table">
+        <thead><tr><th>姓名</th><th>起止</th><th>类型</th><th>状态</th></tr></thead>
+        <tbody>
+        {% for l in leaves %}
+        <tr>
+            <td>{{ l.user.name }}</td>
+            <td>{{ l.start_date }} - {{ l.end_date }}</td>
+            <td>{{ l.leave_type }}</td>
+            <td>{{ l.status }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+  </div>
+  <div class="tab-pane fade" id="bonus">
+    <table class="table">
+        <thead><tr><th>姓名</th><th>月份</th><th>金额</th><th>事由</th></tr></thead>
+        <tbody>
+        {% for b in bonuses %}
+        <tr>
+            <td>{{ b.user.name }}</td>
+            <td>{{ b.year_month }}</td>
+            <td>{{ b.amount }}</td>
+            <td>{{ b.reason }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

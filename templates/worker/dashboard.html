@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>个人中心</h2>
+<p>本月奖金合计：{{ total_bonus }} 元</p>
+<p>待审批加班：{{ ot_pending }} 条</p>
+<p>待审批请假：{{ lv_pending }} 条</p>
+{% endblock %}

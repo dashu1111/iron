@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>批量请假申请</h2>
+<form method="post" class="row g-3">
+    <div class="col-md-3">
+        <label class="form-label">开始日期</label>
+        <input type="date" name="start_date" class="form-control" required>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">结束日期</label>
+        <input type="date" name="end_date" class="form-control" required>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">请假类型</label>
+        <select name="leave_type" class="form-select">
+            <option>年假</option><option>事假</option><option>病假</option><option>调休</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">事由</label>
+        <input type="text" name="reason" class="form-control">
+    </div>
+    <div class="col-12"><hr><h5>选择请假员工</h5></div>
+    <div class="col-12">
+        <button type="button" class="btn btn-sm btn-secondary mb-2" onclick="checkAll()">全选</button>
+        <button type="button" class="btn btn-sm btn-secondary mb-2" onclick="uncheckAll()">取消全选</button>
+        <table class="table table-sm table-bordered">
+            <thead><tr><th>选择</th><th>姓名</th></tr></thead>
+            <tbody>
+            {% for w in workers %}
+            <tr>
+                <td><input type="checkbox" name="selected_workers" value="{{ w.id }}"></td>
+                <td>{{ w.name }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-success">提交请假申请</button>
+    </div>
+</form>
+<script>
+function checkAll(){...} // 同上
+function uncheckAll(){...}
+</script>
+{% endblock %}

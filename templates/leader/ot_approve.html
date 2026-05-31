@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>加班审批</h2>
+<table class="table">
+    <thead><tr><th>姓名</th><th>日期</th><th>班次</th><th>时间</th><th>事由</th><th>操作</th></tr></thead>
+    <tbody>
+    {% for ot in ots %}
+    <tr>
+        <td>{{ ot.user.name }}</td>
+        <td>{{ ot.date }}</td>
+        <td>{{ ot.shift }}</td>
+        <td>{{ ot.start_time.strftime('%H:%M') }} - {{ ot.end_time.strftime('%H:%M') }}</td>
+        <td>{{ ot.reason }}</td>
+        <td>
+            <a href="{{ url_for('leader.handle_ot', id=ot.id, action='approve') }}" class="btn btn-sm btn-success">通过</a>
+            <a href="{{ url_for('leader.handle_ot', id=ot.id, action='reject') }}" class="btn btn-sm btn-danger">驳回</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

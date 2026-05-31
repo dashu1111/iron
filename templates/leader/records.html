@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>本作业区数据</h2>
+<a href="{{ url_for('leader.export_ot') }}" class="btn btn-primary mb-3">导出加班 Excel</a>
+<table class="table">
+    <thead><tr><th>姓名</th><th>日期</th><th>班次</th><th>时间</th><th>状态</th></tr></thead>
+    <tbody>
+    {% for ot in ots %}
+    <tr>
+        <td>{{ ot.user.name }}</td>
+        <td>{{ ot.date }}</td>
+        <td>{{ ot.shift }}</td>
+        <td>{{ ot.start_time.strftime('%H:%M') }} - {{ ot.end_time.strftime('%H:%M') }}</td>
+        <td>{{ ot.status }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

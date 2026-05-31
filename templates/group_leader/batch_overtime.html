@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>批量加班填报</h2>
+<form method="post" class="row g-3">
+    <div class="col-md-4">
+        <label class="form-label">加班日期</label>
+        <input type="date" name="date" class="form-control" required>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">班次</label>
+        <select name="shift" class="form-select">
+            <option>白班</option><option>夜班</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">加班类型</label>
+        <select name="ot_type" class="form-select">
+            <option>工作日延时</option><option>休息日加班</option><option>节假日加班</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">默认开始时间</label>
+        <input type="time" name="start_time" class="form-control" value="18:00" required>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">默认结束时间</label>
+        <input type="time" name="end_time" class="form-control" value="21:00" required>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">统一加班事由</label>
+        <input type="text" name="reason" class="form-control">
+    </div>
+    <div class="col-12"><hr><h5>选择加班员工</h5></div>
+    <div class="col-12">
+        <button type="button" class="btn btn-sm btn-secondary mb-2" onclick="checkAll()">全选</button>
+        <button type="button" class="btn btn-sm btn-secondary mb-2" onclick="uncheckAll()">取消全选</button>
+        <table class="table table-sm table-bordered">
+            <thead><tr><th>选择</th><th>姓名</th><th>自定义开始</th><th>自定义结束</th><th>自定义事由</th></tr></thead>
+            <tbody>
+            {% for w in workers %}
+            <tr>
+                <td><input type="checkbox" name="selected_workers" value="{{ w.id }}"></td>
+                <td>{{ w.name }}</td>
+                <td><input type="time" name="start_{{ w.id }}" class="form-control form-control-sm" placeholder="默认"></td>
+                <td><input type="time" name="end_{{ w.id }}" class="form-control form-control-sm" placeholder="默认"></td>
+                <td><input type="text" name="reason_{{ w.id }}" class="form-control form-control-sm" placeholder="默认"></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-success">提交加班申请</button>
+    </div>
+</form>
+
+<script>
+function checkAll() {
+    var checks = document.getElementsByName('selected_workers');
+    for (var i=0; i<checks.length; i++) checks[i].checked = true;
+}
+function uncheckAll() {
+    var checks = document.getElementsByName('selected_workers');
+    for (var i=0; i<checks.length; i++) checks[i].checked = false;
+}
+</script>
+{% endblock %}

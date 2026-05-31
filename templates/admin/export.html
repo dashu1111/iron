@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>数据导出</h2>
+<form method="post" class="row g-3">
+    <div class="col-md-3">
+        <label class="form-label">数据类型</label>
+        <select name="data_type" class="form-select">
+            <option value="overtime">加班记录</option>
+            <option value="leave">请假记录</option>
+            <option value="bonus">奖金记录</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">起始月份</label>
+        <input type="month" name="start_month" class="form-control">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">截止月份</label>
+        <input type="month" name="end_month" class="form-control">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">作业区（可选）</label>
+        <input type="text" name="department" class="form-control">
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">导出 Excel</button>
+    </div>
+</form>
+{% endblock %}

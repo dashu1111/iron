@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>请假审批</h2>
+<table class="table">
+    <thead><tr><th>姓名</th><th>起止</th><th>类型</th><th>事由</th><th>操作</th></tr></thead>
+    <tbody>
+    {% for lv in leaves %}
+    <tr>
+        <td>{{ lv.user.name }}</td>
+        <td>{{ lv.start_date }} ~ {{ lv.end_date }}</td>
+        <td>{{ lv.leave_type }}</td>
+        <td>{{ lv.reason }}</td>
+        <td>
+            <a href="{{ url_for('leader.handle_leave', id=lv.id, action='approve') }}" class="btn btn-sm btn-success">通过</a>
+            <a href="{{ url_for('leader.handle_leave', id=lv.id, action='reject') }}" class="btn btn-sm btn-danger">驳回</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

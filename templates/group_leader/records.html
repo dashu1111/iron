@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>班组记录</h2>
+<ul class="nav nav-tabs">
+  <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ot">加班</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#lv">请假</button></li>
+</ul>
+<div class="tab-content mt-3">
+  <div class="tab-pane fade show active" id="ot">
+    <table class="table">
+        <thead><tr><th>姓名</th><th>日期</th><th>班次</th><th>时间</th><th>状态</th></tr></thead>
+        <tbody>{% for ot in ots %}<tr><td>{{ ot.user.name }}</td><td>{{ ot.date }}</td><td>{{ ot.shift }}</td><td>{{ ot.start_time.strftime('%H:%M') }} - {{ ot.end_time.strftime('%H:%M') }}</td><td>{{ ot.status }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+  <div class="tab-pane fade" id="lv">
+    <table class="table">
+        <thead><tr><th>姓名</th><th>起止</th><th>类型</th><th>状态</th></tr></thead>
+        <tbody>{% for lv in leaves %}<tr><td>{{ lv.user.name }}</td><td>{{ lv.start_date }} ~ {{ lv.end_date }}</td><td>{{ lv.leave_type }}</td><td>{{ lv.status }}</td></tr>{% endfor %}</tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

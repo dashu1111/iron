@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>全员工奖金分配</h2>
+<form method="post" class="row g-3">
+    <div class="col-md-3">
+        <label class="form-label">月份</label>
+        <input type="month" name="year_month" class="form-control" required>
+    </div>
+    <div class="col-12"><hr></div>
+    {% for user in users %}
+    <div class="row mb-3">
+        <div class="col-md-2"><strong>{{ user.name }} ({{ user.department }})</strong></div>
+        <div class="col-md-2">
+            <input type="number" step="0.01" name="amount_{{ user.id }}" class="form-control" placeholder="金额">
+        </div>
+        <div class="col-md-4">
+            <input type="text" name="reason_{{ user.id }}" class="form-control" placeholder="分配原因">
+        </div>
+    </div>
+    {% endfor %}
+    <div class="col-12">
+        <button type="submit" class="btn btn-success">提交分配</button>
+    </div>
+</form>
+{% endblock %}
