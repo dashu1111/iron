@@ -7,35 +7,82 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         {% if current_user.is_authenticated %}
+          {% set ep = request.endpoint %}
           {% if current_user.role == 'worker' %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('worker.dashboard') }}">个人中心</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('worker.overtime_add') }}">加班填报</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('worker.leave_add') }}">请假申请</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('worker.my_records') }}">我的记录</a></li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'worker.dashboard' %} active fw-bold{% endif %}" href="{{ url_for('worker.dashboard') }}">个人中心</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'worker.overtime_add' %} active fw-bold{% endif %}" href="{{ url_for('worker.overtime_add') }}">加班填报</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'worker.leave_add' %} active fw-bold{% endif %}" href="{{ url_for('worker.leave_add') }}">请假申请</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'worker.my_records' %} active fw-bold{% endif %}" href="{{ url_for('worker.my_records') }}">我的记录</a>
+            </li>
           {% elif current_user.role == 'group_leader' %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('group_leader.dashboard') }}">班组首页</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('group_leader.batch_overtime') }}">批量加班</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('group_leader.batch_leave') }}">批量请假</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('group_leader.records') }}">班组记录</a></li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'group_leader.dashboard' %} active fw-bold{% endif %}" href="{{ url_for('group_leader.dashboard') }}">班组首页</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'group_leader.batch_overtime' %} active fw-bold{% endif %}" href="{{ url_for('group_leader.batch_overtime') }}">批量加班</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'group_leader.batch_leave' %} active fw-bold{% endif %}" href="{{ url_for('group_leader.batch_leave') }}">批量请假</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'group_leader.records' %} active fw-bold{% endif %}" href="{{ url_for('group_leader.records') }}">班组记录</a>
+            </li>
           {% elif current_user.role == 'leader' %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('leader.dashboard') }}">作业区首页</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('leader.ot_approve') }}">加班审批</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('leader.leave_approve') }}">请假审批</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('leader.ot_add') }}">代报加班</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('leader.bonus_assign') }}">奖金分配</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('leader.records') }}">数据导出</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('leader.reset_password') }}">重置密码</a></li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'leader.dashboard' %} active fw-bold{% endif %}" href="{{ url_for('leader.dashboard') }}">作业区首页</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep in ['leader.ot_approve', 'leader.handle_ot'] %} active fw-bold{% endif %}" href="{{ url_for('leader.ot_approve') }}">加班审批</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep in ['leader.leave_approve', 'leader.handle_leave'] %} active fw-bold{% endif %}" href="{{ url_for('leader.leave_approve') }}">请假审批</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'leader.ot_add' %} active fw-bold{% endif %}" href="{{ url_for('leader.ot_add') }}">代报加班</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'leader.bonus_assign' %} active fw-bold{% endif %}" href="{{ url_for('leader.bonus_assign') }}">奖金分配</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep in ['leader.records', 'leader.export_ot'] %} active fw-bold{% endif %}" href="{{ url_for('leader.records') }}">数据导出</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'leader.reset_password' %} active fw-bold{% endif %}" href="{{ url_for('leader.reset_password') }}">重置密码</a>
+            </li>
           {% elif current_user.role == 'admin' %}
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}">管理首页</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.user_manage') }}">账号管理</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.bonus_assign') }}">全员工奖金</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.all_records') }}">全量查询</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.export_data') }}">数据导出</a></li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'admin.dashboard' %} active fw-bold{% endif %}" href="{{ url_for('admin.dashboard') }}">管理首页</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep in ['admin.user_manage', 'admin.user_add', 'admin.user_edit', 'admin.reset_password', 'admin.toggle_user'] %} active fw-bold{% endif %}" href="{{ url_for('admin.user_manage') }}">账号管理</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'admin.bonus_assign' %} active fw-bold{% endif %}" href="{{ url_for('admin.bonus_assign') }}">全员工奖金</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'admin.all_records' %} active fw-bold{% endif %}" href="{{ url_for('admin.all_records') }}">全量查询</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link{% if ep == 'admin.export_data' %} active fw-bold{% endif %}" href="{{ url_for('admin.export_data') }}">数据导出</a>
+            </li>
           {% endif %}
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.change_password') }}">修改密码</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">退出</a></li>
+          <li class="nav-item">
+            <a class="nav-link{% if ep == 'auth.change_password' %} active fw-bold{% endif %}" href="{{ url_for('auth.change_password') }}">修改密码</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.logout') }}">退出</a>
+          </li>
         {% else %}
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">登录</a></li>
+          <li class="nav-item">
+            <a class="nav-link{% if request.endpoint == 'auth.login' %} active fw-bold{% endif %}" href="{{ url_for('auth.login') }}">登录</a>
+          </li>
         {% endif %}
       </ul>
     </div>

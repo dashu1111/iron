@@ -15,7 +15,7 @@ def login():
         user = User.query.filter_by(username=username, enabled=True).first()
         if user and user.check_password(password):
             login_user(user)
-            flash('登录成功', 'success')
+            flash('登录成功', 'login-success')
             # 根据角色跳转
             if user.role == 'admin':
                 return redirect(url_for('admin.dashboard'))
