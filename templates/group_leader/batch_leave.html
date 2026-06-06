@@ -4,11 +4,11 @@
 <form method="post" class="row g-3">
     <div class="col-md-3">
         <label class="form-label">开始日期</label>
-        <input type="date" name="start_date" class="form-control" required>
+        <input type="date" name="start_date" class="form-control" required value="{{ default_date }}">
     </div>
     <div class="col-md-3">
         <label class="form-label">结束日期</label>
-        <input type="date" name="end_date" class="form-control" required>
+        <input type="date" name="end_date" class="form-control" required value="{{ default_date }}">
     </div>
     <div class="col-md-3">
         <label class="form-label">请假类型</label>

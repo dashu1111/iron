@@ -14,6 +14,7 @@
         <label class="form-label">角色</label>
         <select name="role" class="form-select">
             <option value="worker" {% if user.role=='worker' %}selected{% endif %}>普通员工</option>
+            <option value="group_leader" {% if user.role=='group_leader' %}selected{% endif %}>班组长</option>
             <option value="leader" {% if user.role=='leader' %}selected{% endif %}>作业长</option>
             <option value="admin" {% if user.role=='admin' %}selected{% endif %}>管理员</option>
         </select>

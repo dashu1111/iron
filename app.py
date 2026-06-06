@@ -3,6 +3,7 @@ from flask_login import LoginManager, current_user
 from config import Config
 from models import db, User
 from flask_migrate import Migrate
+from datetime import date
 import os
 
 def create_app():
@@ -18,6 +19,14 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.get(User, int(user_id))
+
+    @app.context_processor
+    def inject_defaults():
+        today = date.today()
+        return {
+            'default_date': today.isoformat(),
+            'default_month': today.strftime('%Y-%m'),
+        }
 
     # 注册蓝图
     from auth.routes import auth_bp

@@ -4,7 +4,7 @@
 <form method="post" class="row g-3">
     <div class="col-md-3">
         <label class="form-label">月份</label>
-        <input type="month" name="year_month" class="form-control" required>
+        <input type="month" name="year_month" class="form-control" required value="{{ default_month }}">
     </div>
     <div class="col-12"><hr></div>
     {% for user in users %}

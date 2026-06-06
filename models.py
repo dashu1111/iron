@@ -29,17 +29,21 @@ class Overtime(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     date = db.Column(db.Date, nullable=False)
     shift = db.Column(db.String(10))
-    ot_type = db.Column(db.String(20))
+    ot_type = db.Column(db.String(20))  # 在线内包 / 在线外包 / 行车 / 离线 / 支撑检修
+    quantity = db.Column(db.Float, nullable=True)
+    amount = db.Column(db.Float, nullable=True)
     start_time = db.Column(db.Time, nullable=False)
     end_time = db.Column(db.Time, nullable=False)
     reason = db.Column(db.String(200))
-    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
+    status = db.Column(db.String(20), default='pending')
     submit_time = db.Column(db.DateTime, default=datetime.now)
     reviewer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     review_comment = db.Column(db.String(200))
+    submitter_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
 
     user = db.relationship('User', foreign_keys=[user_id], backref='overtimes')
     reviewer = db.relationship('User', foreign_keys=[reviewer_id])
+    submitter = db.relationship('User', foreign_keys=[submitter_id], backref='submitted_overtimes')
 
 class Leave(db.Model):
     __tablename__ = 'leaves'

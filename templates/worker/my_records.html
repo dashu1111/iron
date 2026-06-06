@@ -1,33 +1,97 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>我的记录</h2>
-<h4>加班记录</h4>
-<table class="table">
-    <thead><tr><th>日期</th><th>班次</th><th>时间</th><th>类型</th><th>状态</th></tr></thead>
-    <tbody>
-    {% for ot in ots %}
-    <tr>
-        <td>{{ ot.date }}</td>
-        <td>{{ ot.shift }}</td>
-        <td>{{ ot.start_time.strftime('%H:%M') }} - {{ ot.end_time.strftime('%H:%M') }}</td>
-        <td>{{ ot.ot_type }}</td>
-        <td>{{ ot.status }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-<h4>请假记录</h4>
-<table class="table">
-    <thead><tr><th>起始</th><th>结束</th><th>类型</th><th>状态</th></tr></thead>
-    <tbody>
-    {% for lv in leaves %}
-    <tr>
-        <td>{{ lv.start_date }}</td>
-        <td>{{ lv.end_date }}</td>
-        <td>{{ lv.leave_type }}</td>
-        <td>{{ lv.status }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="ot-tab" data-bs-toggle="tab" data-bs-target="#ot" type="button">加班记录</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="leave-tab" data-bs-toggle="tab" data-bs-target="#leave" type="button">请假记录</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="bonus-tab" data-bs-toggle="tab" data-bs-target="#bonus" type="button">奖金记录</button>
+  </li>
+</ul>
+
+<div class="tab-content mt-3">
+  <!-- 加班记录 -->
+  <div class="tab-pane fade show active" id="ot">
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>日期</th><th>班次</th><th>类型</th><th>时间</th>
+                    <th>产量(包)</th><th>加班费</th><th>状态</th><th>事由</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ot in ots %}
+                <tr>
+                    <td>{{ ot.date }}</td>
+                    <td>{{ ot.shift }}</td>
+                    <td>{{ ot.ot_type }}</td>
+                    <td>{{ ot.start_time.strftime('%H:%M') }} - {{ ot.end_time.strftime('%H:%M') }}</td>
+                    <td>{{ ot.quantity if ot.quantity else '' }}</td>
+                    <td>{{ ot.amount if ot.amount else '' }}</td>
+                    <td>
+                        {% if ot.status == 'pending' %}<span class="text-warning">待审批</span>
+                        {% elif ot.status == 'approved' %}<span class="text-success">已通过</span>
+                        {% else %}<span class="text-danger">已驳回</span>{% endif %}
+                    </td>
+                    <td>{{ ot.reason }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+  </div>
+
+  <!-- 请假记录 -->
+  <div class="tab-pane fade" id="leave">
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>起始日期</th><th>结束日期</th><th>类型</th><th>状态</th><th>事由</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lv in leaves %}
+                <tr>
+                    <td>{{ lv.start_date }}</td>
+                    <td>{{ lv.end_date }}</td>
+                    <td>{{ lv.leave_type }}</td>
+                    <td>
+                        {% if lv.status == 'pending' %}<span class="text-warning">待审批</span>
+                        {% elif lv.status == 'approved' %}<span class="text-success">已通过</span>
+                        {% else %}<span class="text-danger">已驳回</span>{% endif %}
+                    </td>
+                    <td>{{ lv.reason }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+  </div>
+
+  <!-- 奖金记录 -->
+  <div class="tab-pane fade" id="bonus">
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr><th>月份</th><th>金额</th><th>事由</th></tr>
+            </thead>
+            <tbody>
+                {% for b in bonuses %}
+                <tr>
+                    <td>{{ b.year_month }}</td>
+                    <td>{{ b.amount }}</td>
+                    <td>{{ b.reason }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -1,7 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>个人中心</h2>
-<p>本月奖金合计：{{ total_bonus }} 元</p>
-<p>待审批加班：{{ ot_pending }} 条</p>
-<p>待审批请假：{{ lv_pending }} 条</p>
+<h2>个人中心 - {{ current_user.name }}</h2>
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">当月奖金</div>
+            <div class="card-body">
+                <h3>{{ total_bonus }} 元</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">我的加班</div>
+            <div class="card-body">
+                <p>待审批：{{ ot_pending }} 条</p>
+                <p>已通过：{{ ot_approved }} 条</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mt-3">
+        <div class="card">
+            <div class="card-header">我的请假</div>
+            <div class="card-body">
+                <p>待审批：{{ lv_pending }} 条</p>
+                <p>已通过：{{ lv_approved }} 条</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

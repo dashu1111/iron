@@ -29,3 +29,16 @@ def export_excel(columns, data, sheet_name='Sheet1', col_widths=None):
     wb.save(output)
     output.seek(0)
     return output
+
+def calculate_overtime_amount(ot_type, shift, quantity=0.0, manual_amount=None):
+    if ot_type == '支撑检修':
+        return manual_amount or 0.0
+    elif ot_type == '在线内包':
+        return 320 if shift == '白班' else 350
+    elif ot_type == '在线外包':
+        return 370 if shift == '白班' else 400
+    elif ot_type == '行车':
+        return 300 if shift == '白班' else 350
+    elif ot_type == '离线':
+        return 300 + (quantity or 0) * 12
+    return 0.0

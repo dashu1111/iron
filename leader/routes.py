@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_required, current_user
 from models import db, User, Overtime, Leave, Bonus
 from datetime import datetime
-from utils import role_required, export_excel
+from utils import role_required, export_excel, calculate_overtime_amount
 
 leader_bp = Blueprint('leader', __name__)
 
@@ -49,6 +49,23 @@ def handle_ot(id, action):
     flash('操作成功', 'success')
     return redirect(url_for('leader.ot_approve'))
 
+@leader_bp.route('/overtime/approve/all', methods=['POST'])
+@login_required
+@role_required('leader')
+def approve_all_ot():
+    dept = get_dept()
+    ots = Overtime.query.join(User, Overtime.user_id == User.id) \
+        .filter(User.department == dept, Overtime.status == 'pending').all()
+    if not ots:
+        flash('暂无待审批记录', 'info')
+        return redirect(url_for('leader.ot_approve'))
+    for ot in ots:
+        ot.status = 'approved'
+        ot.reviewer_id = current_user.id
+    db.session.commit()
+    flash(f'已一键通过 {len(ots)} 条加班申请', 'success')
+    return redirect(url_for('leader.ot_approve'))
+
 @leader_bp.route('/leave/approve')
 @login_required
 @role_required('leader')
@@ -85,16 +102,27 @@ def ot_add():
     dept = get_dept()
     workers = User.query.filter_by(department=dept, role='worker', enabled=True).all()
     if request.method == 'POST':
+        ot_type = request.form['ot_type']
+        shift = request.form['shift']
+        qty = float(request.form.get('quantity', 0) or 0)
+        manual_amt = float(request.form.get('manual_amount', 0) or 0)
+        amount = calculate_overtime_amount(
+            ot_type, shift, qty,
+            manual_amt if ot_type == '支撑检修' else None
+        )
         ot = Overtime(
             user_id=request.form['user_id'],
             date=datetime.strptime(request.form['date'], '%Y-%m-%d').date(),
-            shift=request.form['shift'],
-            ot_type=request.form['ot_type'],
+            shift=shift,
+            ot_type=ot_type,
             start_time=datetime.strptime(request.form['start_time'], '%H:%M').time(),
             end_time=datetime.strptime(request.form['end_time'], '%H:%M').time(),
             reason=request.form.get('reason', ''),
+            quantity=qty if ot_type == '离线' else None,
+            amount=amount,
             status='approved',
-            reviewer_id=current_user.id
+            reviewer_id=current_user.id,
+            submitter_id=current_user.id
         )
         db.session.add(ot)
         db.session.commit()
@@ -148,27 +176,26 @@ def export_ot():
         user = db.session.get(User, ot.user_id)
         if not user:
             continue
+        if ot.amount is None and ot.ot_type in ['在线内包', '在线外包', '行车', '离线']:
+            amount = calculate_overtime_amount(ot.ot_type, ot.shift, ot.quantity or 0)
+        else:
+            amount = ot.amount or 0.0
         hours = round(
             (datetime.combine(datetime.today(), ot.end_time) -
              datetime.combine(datetime.today(), ot.start_time)).seconds / 3600,
             1
         )
         data.append([
-            user.name,
-            user.department,
-            ot.date.strftime('%Y-%m-%d'),
-            ot.shift,
-            ot.ot_type,
-            ot.start_time.strftime('%H:%M'),
-            ot.end_time.strftime('%H:%M'),
-            hours,
-            ot.reason
+            user.name, user.department, user.group or '',
+            ot.date.strftime('%Y-%m-%d'), ot.shift, ot.ot_type,
+            ot.start_time.strftime('%H:%M'), ot.end_time.strftime('%H:%M'), hours,
+            ot.quantity or '', round(amount, 2), ot.reason
         ])
     output = export_excel(
-        ['姓名', '作业区', '日期', '班次', '类型', '开始', '结束', '小时', '事由'],
+        ['姓名', '作业区', '班组', '日期', '班次', '加班类型', '开始', '结束', '时长', '产量(包)', '加班费', '事由'],
         data,
         sheet_name='加班记录',
-        col_widths=[10, 12, 15, 8, 12, 12, 12, 8, 30]
+        col_widths=[10, 12, 8, 15, 8, 12, 10, 10, 8, 10, 10, 30]
     )
     return send_file(output, as_attachment=True, download_name='加班统计.xlsx')
 

@@ -1,17 +1,203 @@
 {% extends "base.html" %}
+
+{% block body_class %}login-page{% endblock %}
+
+{% block extra_head %}
+<style>
+.login-page {
+    min-height: 100vh;
+    overflow: hidden;
+}
+.login-video-bg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: -2;
+}
+.login-video-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: -1;
+}
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+.login-card {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 16px;
+    padding: 2rem 2rem 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+.login-card h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+}
+.login-card .form-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+.login-card .form-control {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+.login-card .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+.login-card .form-control:focus {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.15);
+}
+.login-card .form-control:-webkit-autofill,
+.login-card .form-control:-webkit-autofill:hover,
+.login-card .form-control:-webkit-autofill:focus,
+.login-card .form-control:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.18) inset !important;
+    box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.18) inset !important;
+    -webkit-text-fill-color: #fff !important;
+    caret-color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: background-color 99999s ease-out, color 99999s ease-out;
+}
+.login-card .form-control:autofill {
+    box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.18) inset !important;
+    -webkit-text-fill-color: #fff !important;
+    caret-color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.password-toggle-wrap {
+    position: relative;
+}
+.password-toggle-wrap .form-control {
+    padding-right: 2.75rem;
+}
+.password-toggle-wrap input[type="password"]::-ms-reveal,
+.password-toggle-wrap input[type="password"]::-ms-clear {
+    display: none;
+}
+.password-toggle-wrap input[type="password"]::-webkit-textfield-decoration-container,
+.password-toggle-wrap input[type="password"]::-webkit-credentials-auto-fill-button,
+.password-toggle-wrap input[type="password"]::-webkit-strong-password-auto-fill-button {
+    display: none !important;
+}
+.password-toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    padding: 0;
+    line-height: 0;
+    color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+}
+.password-toggle-btn:hover {
+    color: #fff;
+}
+.password-toggle-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.password-toggle-btn .eye-open {
+    display: none;
+}
+.password-toggle-btn.show-password .eye-closed {
+    display: none;
+}
+.password-toggle-btn.show-password .eye-open {
+    display: block;
+}
+.login-card .btn-primary {
+    width: 100%;
+    padding: 0.6rem;
+}
+</style>
+{% endblock %}
+
+{% block video_background %}
+<video class="login-video-bg" autoplay muted loop playsinline>
+    <source src="{{ url_for('static', filename='video/login_bg.mp4') }}" type="video/mp4">
+</video>
+<div class="login-video-overlay"></div>
+{% endblock %}
+
+{% block show_nav %}{% endblock %}
+
+{% block container_class %}login-wrapper{% endblock %}
+
 {% block content %}
-<h2>用户登录</h2>
-<form method="post" class="row g-3">
-    <div class="col-md-6">
-        <label class="form-label">用户名</label>
-        <input type="text" name="username" class="form-control" required>
-    </div>
-    <div class="col-md-6">
-        <label class="form-label">密码</label>
-        <input type="password" name="password" class="form-control" required>
-    </div>
-    <div class="col-12">
-        <button type="submit" class="btn btn-primary">登录</button>
-    </div>
-</form>
+<div class="login-card">
+    <h2>用户登录</h2>
+    <form method="post" class="row g-3">
+        <div class="col-12">
+            <label class="form-label">用户名</label>
+            <input type="text" name="username" class="form-control" required autofocus autocomplete="username">
+        </div>
+        <div class="col-12">
+            <label class="form-label">密码</label>
+            <div class="password-toggle-wrap">
+                <input type="password" name="password" id="login-password" class="form-control" required autocomplete="current-password">
+                <button type="button" class="password-toggle-btn" id="password-toggle" aria-label="显示密码">
+                    <svg class="eye-closed" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                        <path d="M1 1l22 22"/>
+                        <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                    </svg>
+                    <svg class="eye-open" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">登录</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.querySelector('.login-video-bg').play().catch(function () {});
+
+(function () {
+    var passwordInput = document.getElementById('login-password');
+    var toggleBtn = document.getElementById('password-toggle');
+    if (!passwordInput || !toggleBtn) return;
+
+    toggleBtn.addEventListener('click', function () {
+        var visible = passwordInput.type === 'text';
+        passwordInput.type = visible ? 'password' : 'text';
+        toggleBtn.classList.toggle('show-password', !visible);
+        toggleBtn.setAttribute('aria-label', visible ? '显示密码' : '隐藏密码');
+    });
+})();
+</script>
 {% endblock %}

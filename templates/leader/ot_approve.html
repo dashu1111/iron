@@ -1,22 +1,50 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>加班审批</h2>
-<table class="table">
-    <thead><tr><th>姓名</th><th>日期</th><th>班次</th><th>时间</th><th>事由</th><th>操作</th></tr></thead>
-    <tbody>
-    {% for ot in ots %}
-    <tr>
-        <td>{{ ot.user.name }}</td>
-        <td>{{ ot.date }}</td>
-        <td>{{ ot.shift }}</td>
-        <td>{{ ot.start_time.strftime('%H:%M') }} - {{ ot.end_time.strftime('%H:%M') }}</td>
-        <td>{{ ot.reason }}</td>
-        <td>
-            <a href="{{ url_for('leader.handle_ot', id=ot.id, action='approve') }}" class="btn btn-sm btn-success">通过</a>
-            <a href="{{ url_for('leader.handle_ot', id=ot.id, action='reject') }}" class="btn btn-sm btn-danger">驳回</a>
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+{% if ots %}
+<form method="post" action="{{ url_for('leader.approve_all_ot') }}" class="mb-3"
+      onsubmit="return confirm('确认一键通过全部 {{ ots|length }} 条待审批加班记录？');">
+    <button type="submit" class="btn btn-success">一键审批</button>
+</form>
+{% endif %}
+<div class="table-responsive">    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>员工姓名</th>
+                <th>班组</th>
+                <th>日期</th>
+                <th>班次</th>
+                <th>加班类型</th>
+                <th>时间</th>
+                <th>产量(包)</th>
+                <th>加班费</th>
+                <th>事由</th>
+                <th>填报人</th>
+                <th>填报时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ot in ots %}
+            <tr>
+                <td>{{ ot.user.name }}</td>
+                <td>{{ ot.user.group or '-' }}</td>
+                <td>{{ ot.date }}</td>
+                <td>{{ ot.shift }}</td>
+                <td>{{ ot.ot_type }}</td>
+                <td>{{ ot.start_time.strftime('%H:%M') }} - {{ ot.end_time.strftime('%H:%M') }}</td>
+                <td>{{ ot.quantity if ot.quantity else '' }}</td>
+                <td>{{ ot.amount if ot.amount else '' }}</td>
+                <td>{{ ot.reason }}</td>
+                <td>{{ ot.submitter.name if ot.submitter else '系统' }}</td>
+                <td>{{ ot.submit_time.strftime('%Y-%m-%d %H:%M') if ot.submit_time else '' }}</td>
+                <td>
+                    <a href="{{ url_for('leader.handle_ot', id=ot.id, action='approve') }}" class="btn btn-sm btn-success">通过</a>
+                    <a href="{{ url_for('leader.handle_ot', id=ot.id, action='reject') }}" class="btn btn-sm btn-danger">驳回</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

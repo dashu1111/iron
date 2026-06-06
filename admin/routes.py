@@ -4,6 +4,10 @@ from models import db, User, Overtime, Leave, Bonus
 from datetime import datetime
 from utils import role_required, export_excel
 from io import BytesIO
+import openpyxl
+from openpyxl.styles import Font, Alignment
+from collections import defaultdict
+from io import BytesIO
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -125,24 +129,58 @@ def export_data():
         data_type = request.form['data_type']
         # start_month / end_month / department 可留待扩展，此处仅示例全部导出
         if data_type == 'overtime':
-            records = Overtime.query.all()
-            data = []
-            for ot in records:
-                user = db.session.get(User, ot.user_id)
+            records = Overtime.query.filter_by(status='approved').order_by(Overtime.date).all()
+            user_records = defaultdict(lambda: defaultdict(list))
+            for rec in records:
+                key = f"{rec.ot_type}-{rec.shift}"
+                user_records[rec.user_id][key].append(rec.date)
+
+            users = {u.id: u for u in User.query.filter(User.id.in_(user_records.keys())).all()}
+
+            all_columns = set()
+            for ud in user_records.values():
+                all_columns.update(ud.keys())
+            type_order = ['在线内包', '在线外包', '行车', '离线', '支撑检修']
+            sorted_columns = []
+            for t in type_order:
+                for s in ['白班', '夜班']:
+                    key = f"{t}-{s}"
+                    if key in all_columns:
+                        sorted_columns.append(key)
+                        all_columns.remove(key)
+            sorted_columns.extend(sorted(all_columns))
+
+            wb = openpyxl.Workbook()
+            ws = wb.active
+            ws.title = "加班统计汇总"
+            headers = ['姓名', '作业区', '班组'] + sorted_columns
+            ws.append(headers)
+            for col_idx in range(1, len(headers) + 1):
+                cell = ws.cell(row=1, column=col_idx)
+                cell.font = Font(bold=True)
+                cell.alignment = Alignment(horizontal='center')
+
+            for user_id, type_dict in user_records.items():
+                user = users.get(user_id)
                 if not user:
-                    continue   # 用户不存在则跳过
-                hours = round(
-                    (datetime.combine(datetime.today(), ot.end_time) -
-                     datetime.combine(datetime.today(), ot.start_time)).seconds / 3600, 1
-                )
-                data.append([
-                    user.name, user.department, str(ot.date), ot.shift, ot.ot_type,
-                    ot.start_time.strftime('%H:%M'), ot.end_time.strftime('%H:%M'),
-                    hours, ot.reason, ot.status
-                ])
-            cols = ['姓名', '作业区', '日期', '班次', '类型', '开始', '结束', '小时', '事由', '状态']
-            output = export_excel(cols, data, '加班记录', [10, 12, 15, 8, 12, 10, 10, 8, 30, 10])
-            return send_file(output, as_attachment=True, download_name='overtime_export.xlsx')
+                    continue
+                row = [user.name, user.department or '', user.group or '']
+                for col_key in sorted_columns:
+                    dates = type_dict.get(col_key, [])
+                    date_str = ', '.join(f"{d.month}.{d.day}" for d in sorted(dates)) if dates else ''
+                    row.append(date_str)
+                ws.append(row)
+
+            ws.column_dimensions['A'].width = 10
+            ws.column_dimensions['B'].width = 12
+            ws.column_dimensions['C'].width = 10
+            for i in range(4, 4 + len(sorted_columns)):
+                ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = 20
+
+            output = BytesIO()
+            wb.save(output)
+            output.seek(0)
+            return send_file(output, as_attachment=True, download_name='加班汇总表.xlsx')
         flash('导出功能请根据需求完善', 'info')
         return redirect(url_for('admin.export_data'))
     return render_template('admin/export.html')

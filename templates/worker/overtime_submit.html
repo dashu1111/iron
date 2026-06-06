@@ -4,30 +4,44 @@
 <form method="post" class="row g-3">
     <div class="col-md-4">
         <label class="form-label">加班日期</label>
-        <input type="date" name="date" class="form-control" required>
+        <input type="date" name="date" class="form-control" required value="{{ default_date }}">
     </div>
     <div class="col-md-4">
         <label class="form-label">班次</label>
-        <select name="shift" class="form-select">
-            <option>白班</option>
-            <option>夜班</option>
+        <select name="shift" class="form-select" id="shiftSelect">
+            <option value="白班">白班</option>
+            <option value="夜班">夜班</option>
         </select>
     </div>
     <div class="col-md-4">
         <label class="form-label">加班类型</label>
-        <select name="ot_type" class="form-select">
-            <option>工作日延时</option>
-            <option>休息日加班</option>
-            <option>节假日加班</option>
+        <select name="ot_type" class="form-select" id="otTypeSelect">
+            <option value="在线内包">在线内包</option>
+            <option value="在线外包">在线外包</option>
+            <option value="行车">行车</option>
+            <option value="离线">离线</option>
+            <option value="支撑检修">支撑检修</option>
         </select>
     </div>
     <div class="col-md-4">
         <label class="form-label">开始时间</label>
-        <input type="time" name="start_time" class="form-control" required>
+        <input type="time" name="start_time" class="form-control" value="08:00" required>
     </div>
     <div class="col-md-4">
         <label class="form-label">结束时间</label>
-        <input type="time" name="end_time" class="form-control" required>
+        <input type="time" name="end_time" class="form-control" value="20:00" required>
+    </div>
+    <div class="col-md-4" id="quantityDiv" style="display:none;">
+        <label class="form-label">产量（包）</label>
+        <input type="number" step="0.01" name="quantity" class="form-control" value="0">
+    </div>
+    <div class="col-md-4" id="manualAmountDiv" style="display:none;">
+        <label class="form-label">金额（元）</label>
+        <input type="number" step="0.01" name="manual_amount" class="form-control" value="0">
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">预计加班费</label>
+        <input type="text" id="estimatedAmount" class="form-control" readonly value="0">
     </div>
     <div class="col-md-8">
         <label class="form-label">事由</label>
@@ -38,4 +52,47 @@
         <a href="{{ url_for('worker.dashboard') }}" class="btn btn-secondary">返回</a>
     </div>
 </form>
+<script>
+const otTypeSelect = document.getElementById('otTypeSelect');
+const shiftSelect = document.getElementById('shiftSelect');
+const quantityDiv = document.getElementById('quantityDiv');
+const manualAmountDiv = document.getElementById('manualAmountDiv');
+const quantityInput = document.querySelector('input[name="quantity"]');
+const manualAmountInput = document.querySelector('input[name="manual_amount"]');
+const estimatedAmount = document.getElementById('estimatedAmount');
+const startInput = document.querySelector('input[name="start_time"]');
+const endInput = document.querySelector('input[name="end_time"]');
+
+function calculateAmount() {
+    const type = otTypeSelect.value;
+    const shift = shiftSelect.value;
+    const qty = parseFloat(quantityInput.value) || 0;
+    const manual = parseFloat(manualAmountInput.value) || 0;
+    let amount = 0;
+    if (type === '支撑检修') amount = manual;
+    else if (type === '在线内包') amount = shift === '白班' ? 320 : 350;
+    else if (type === '在线外包') amount = shift === '白班' ? 370 : 400;
+    else if (type === '行车') amount = shift === '白班' ? 300 : 350;
+    else if (type === '离线') amount = 300 + qty * 12;
+    estimatedAmount.value = amount.toFixed(2);
+}
+
+function updateForm() {
+    const type = otTypeSelect.value;
+    quantityDiv.style.display = type === '离线' ? '' : 'none';
+    manualAmountDiv.style.display = type === '支撑检修' ? '' : 'none';
+    calculateAmount();
+}
+
+function setDefaultTimeByShift(shift) {
+    if (shift === '白班') { startInput.value = '08:00'; endInput.value = '20:00'; }
+    else { startInput.value = '20:00'; endInput.value = '08:00'; }
+}
+
+otTypeSelect.addEventListener('change', updateForm);
+shiftSelect.addEventListener('change', function() { setDefaultTimeByShift(this.value); calculateAmount(); });
+quantityInput.addEventListener('input', calculateAmount);
+manualAmountInput.addEventListener('input', calculateAmount);
+updateForm();
+</script>
 {% endblock %}
